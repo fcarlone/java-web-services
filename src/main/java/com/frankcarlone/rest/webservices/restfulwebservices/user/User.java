@@ -1,4 +1,4 @@
-package com.frankcarlone.rest.webservices.restfulwebservices;
+package com.frankcarlone.rest.webservices.restfulwebservices.user;
 
 import java.util.Date;
 
