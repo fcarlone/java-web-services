@@ -1,15 +1,15 @@
 package com.frankcarlone.rest.webservices.restfulwebservices.filtering;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonFilter;
 
 //@JsonIgnoreProperties(value={"field2"})
+@JsonFilter("SomeBeanFilter")
 public class SomeBean {
 	private String field1;
 	private String field2;
 	
 //	Secure field exclude from response - with JsonIgnore
-	@JsonIgnore
+//	@JsonIgnore
 	private String field3;
 	
 	public SomeBean(String field1, String field2, String field3) {
