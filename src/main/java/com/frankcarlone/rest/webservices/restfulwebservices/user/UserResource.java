@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
 @RestController
 public class UserResource {
 	
@@ -30,13 +34,19 @@ public class UserResource {
 	
 //	Retrieve a user by id
 	@GetMapping("/users/{id}")
-	public User retrieveUser(@PathVariable int id) {
+	public EntityModel<User> retrieveUser(@PathVariable int id) {
 		User user = service.findOne(id);
 		
 		if(user == null) {
 			throw new UserNotFoundException("id: " + id);
 		}
-		return user;
+			
+//		HATEOAS - return a link of the user
+		EntityModel<User> model = new EntityModel<User>(user);
+		WebMvcLinkBuilder linkTo = linkTo(methodOn(this.getClass()).retrieveAllUsers());
+		model.add(linkTo.withRel("all-users"));
+		
+		return model;
 	}
 	
 //	Create and return an user
