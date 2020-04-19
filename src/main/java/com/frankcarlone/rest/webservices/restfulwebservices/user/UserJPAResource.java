@@ -27,9 +27,13 @@ public class UserJPAResource {
 //	@Autowired
 //	private UserDaoService service;
 	
-//	Use the JPA repository
+//	Use the User repository
 	@Autowired
 	private UserRepository userRepository;
+	
+//	Use the Post repository
+	@Autowired
+	private PostRepository postRepository;
 	
 //	Retrieve all users
 	@GetMapping("/jpa/users")
@@ -54,7 +58,7 @@ public class UserJPAResource {
 		return model;
 	}
 	
-//	Create and return an user
+//	Create and return a user
 	@PostMapping("/jpa/users")
 	public ResponseEntity<Object> createUser(@Valid @RequestBody User user) {
 		User savedUser = userRepository.save(user);
@@ -77,6 +81,7 @@ public class UserJPAResource {
 //	Get a user's post
 	@GetMapping("/jpa/users/{id}/posts")
 	public List<Post> retrieveAllUsers(@PathVariable int id) {
+		
 		Optional<User> userOptional = userRepository.findById(id);
 		
 		if(userOptional.isEmpty()) {
@@ -84,5 +89,30 @@ public class UserJPAResource {
 		}
 		
 		return userOptional.get().getPosts();
+	}
+	
+//	Create and return a user's post
+	@PostMapping("/jpa/users/{id}/posts")
+	public ResponseEntity<Object> createPost(@PathVariable int id, @RequestBody Post post) {
+		
+		Optional<User> userOptional = userRepository.findById(id);
+		
+		if(userOptional.isEmpty()) {
+			throw new UserNotFoundException("id: " + id);
+		}
+		
+		User user = userOptional.get();
+		
+		post.setUser(user);
+		
+		postRepository.save(post);
+		
+//		return created user
+		URI location = ServletUriComponentsBuilder
+			.fromCurrentRequest()
+			.path("/{id}")
+			.buildAndExpand(post.getId()).toUri();
+		
+		return ResponseEntity.created(location).build();
 	}
 }
